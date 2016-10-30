@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wenjuan.dao.ArticleCommentMapper">
+    <resultMap id="BaseResultMap" type="com.wenjuan.model.ArticleComment">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="comment_to" jdbcType="INTEGER" property="commentTo"/>
+        <result column="article" jdbcType="INTEGER" property="article"/>
+        <result column="commenter" jdbcType="INTEGER" property="commenter"/>
+        <result column="time" jdbcType="TIMESTAMP" property="time"/>
+        <result column="status" jdbcType="BIT" property="status"/>
+        <result column="content" jdbcType="LONGVARCHAR" property="content"/>
+        <result column="pics" jdbcType="LONGVARCHAR" property="pics"/>
+        <result column="comment_base" jdbcType="INTEGER" property="commentBase"/>
+    </resultMap>
+    <resultMap id="ViewResultMap" type="com.wenjuan.vo.ArticleCommentView">
+        <result column="id" property="id" jdbcType="INTEGER"/>
+        <result column="commenter" property="commenterId" jdbcType="INTEGER"/>
+        <result column="commenter_name" property="commenterName" jdbcType="VARCHAR"/>
+        <result column="commenter_avatar" property="commenterAvatar" jdbcType="VARCHAR"/>
+        <result column="commenter_nickname" property="commenterNickname" jdbcType="VARCHAR"/>
+        <result column="article" property="article" jdbcType="INTEGER"/>
+        <result column="comment_to_id" property="commentToId" jdbcType="INTEGER"/>
+        <result column="time" property="time" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="BIT"/>
+        <result column="commenter_role" property="commenterRole" jdbcType="TINYINT"/>
+        <result column="content" property="content" jdbcType="LONGVARCHAR"/>
+        <result column="pics" property="pics" jdbcType="LONGVARCHAR"/>
+        <result column="comment_to_name" property="commentToName" jdbcType="VARCHAR"/>
+        <result column="comment_to_nickname" property="commentToNickname" jdbcType="VARCHAR"/>
+        <result column="comment_to_user_id" property="commentToUserId" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="selectByPrimaryKey" resultMap="ViewResultMap" parameterType="java.lang.Integer">
+        SELECT *
+        FROM wj_view_article_comment
+        WHERE id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByArticleId" resultMap="ViewResultMap" parameterType="map">
+        SELECT *
+        FROM wj_view_article_comment
+        WHERE article = #{id,jdbcType=INTEGER}
+        <if test="topLevel">
+            and comment_to_id is null
+        </if>
+    </select>
+    <select id="selectNewComment" resultMap="ViewResultMap" parameterType="java.lang.Integer">
+        SELECT *
+        FROM wj_view_user_msg_article
+        WHERE author = #{userId,jdbcType=INTEGER}
+    </select>
+    <select id="selectCommentAfter" resultMap="ViewResultMap" parameterType="map">
+        SELECT *
+        FROM wj_view_article_comment
+        WHERE article = #{articleId,jdbcType=INTEGER} AND id > #{lastCommentId,jdbcType=INTEGER}
+              AND comment_to_id IS NULL
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+
+        DELETE FROM wj_comment_article
+        WHERE id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.wenjuan.model.ArticleComment">
+        <selectKey resultType="java.lang.Integer" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into wj_comment_article
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="commentTo != null">
+                comment_to,
+            </if>
+            <if test="article != null">
+                article,
+            </if>
+            <if test="commenter != null">
+                commenter,
+            </if>
+            <if test="time != null">
+                time,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="pics != null">
+                pics,
+            </if>
+            <if test="commentBase != null">
+                comment_base,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="commentTo != null">
+                #{commentTo,jdbcType=INTEGER},
+            </if>
+            <if test="article != null">
+                #{article,jdbcType=INTEGER},
+            </if>
+            <if test="commenter != null">
+                #{commenter,jdbcType=INTEGER},
+            </if>
+            <if test="time != null">
+                #{time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=BIT},
+            </if>
+            <if test="content != null">
+                #{content,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="pics != null">
+                #{pics,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="commentBase != null">
+                #{commentBase,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKey" parameterType="com.wenjuan.model.ArticleComment">
+        update wj_comment_article
+        <set>
+            <if test="commentTo != null">
+                comment_to = #{commentTo,jdbcType=INTEGER},
+            </if>
+            <if test="article != null">
+                article = #{article,jdbcType=INTEGER},
+            </if>
+            <if test="commenter != null">
+                commenter = #{commenter,jdbcType=INTEGER},
+            </if>
+            <if test="time != null">
+                time = #{time,jdbcType=TIMESTAMP},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=BIT},
+            </if>
+            <if test="commentBase != null">
+                comment_base = #{commentBase,jdbcType=INTEGER},
+            </if>
+            <if test="content != null">
+                content = #{content,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="pics != null">
+                pics = #{pics,jdbcType=LONGVARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <select id="getCommentFY" parameterType="java.util.Map" resultType="com.wenjuan.model.ArticleComment">
+        SELECT *
+        FROM wj_comment_article
+        WHERE article = #{id}
+        ORDER BY time ASC
+        LIMIT #{begin}, #{end}
+    </select>
+    <select id="articleCommentCount" resultType="int" useCache="false">
+        SELECT count(*)
+        FROM wj_comment_article
+        WHERE comment_to IS NULL
+    </select>
+    <select id="selectTopComment" resultMap="ViewResultMap" parameterType="map">
+        SELECT *
+        FROM wj_view_article_comment
+        WHERE article = #{articleId,jdbcType=INTEGER}
+              AND comment_to_id IS NULL
+        ORDER BY time DESC
+        LIMIT 0, #{count,jdbcType=INTEGER}
+    </select>
+    <select id="selectCommentUnderComment" resultMap="ViewResultMap" parameterType="java.lang.Integer">
+        SELECT DISTINCT *
+        FROM wj_view_article_comment
+        WHERE comment_base = #{commentId,jdbcType=INTEGER} AND comment_to_id IS NOT NULL
+    </select>
+    <select id="selectCommentBaseComment" resultMap="ViewResultMap" parameterType="java.lang.Integer">
+        SELECT DISTINCT *
+        FROM wj_view_article_comment
+        WHERE comment_base = #{commentId,jdbcType=INTEGER} OR id = #{commentId,jdbcType=INTEGER}
+        ORDER BY time
+    </select>
+    <select id="UserComment" resultType="int" parameterType="int">
+        SELECT count(*)
+        FROM wj_comment_article
+        WHERE commenter = #{id}
+    </select>
+    <!-- 本月 -->
+    <select id="getUserComment" resultType="int" parameterType="int">
+        SELECT count(*)
+        FROM wj_comment_article
+        WHERE commenter = #{id} AND date_format(time, '%Y-%m') = date_format(now(), '%Y-%m')
+
+    </select>
+    <!-- 上月 -->
+    <select id="getUserComment2" resultType="int" parameterType="int">
+        SELECT count(*)
+        FROM wj_comment_article
+        WHERE commenter = #{id} AND PERIOD_DIFF(date_format(now(), '%Y%m'), date_format(time, '%Y%m')) = 1
+
+    </select>
+    <select id="selectByArticleId2" resultMap="ViewResultMap" parameterType="java.lang.Integer">
+        SELECT *
+        FROM wj_view_article_comment
+        WHERE article = #{id,jdbcType=INTEGER} ORDER  by time desc
+    </select>
+    <update id="updateCommentViewTime" parameterType="java.lang.Integer">
+        UPDATE wj_user
+        SET view_reply_time_article = CURRENT_TIMESTAMP
+        WHERE id = #{#id,jdbcType=INTEGER}
+    </update>
+    <select id="selectMySendMsg" parameterType="map" resultType="com.wenjuan.model.Article">
+        SELECT DISTINCT * FROM (
+        SELECT
+        if(wca.comment_base is null,wca.id,wca.comment_base) extra,
+        a.*
+        FROM wj_view_article a, wj_comment_article wca
+        WHERE commenter = #{userId,jdbcType=INTEGER} AND wca.article = a.id
+        <if test="comparator != null and  time != null">
+            AND unix_timestamp(wca.time) ${comparator} #{time}
+        </if>
+        GROUP BY a.id,wca.id
+        order by max(wca.time) desc)
+        a
+        <if test="startIndex != null">
+            limit #{startIndex,jdbcType=INTEGER},#{pageLimited,jdbcType=INTEGER}
+        </if>
+    </select>
+    <select id="selectMyReceiveMsg" parameterType="map" resultType="com.wenjuan.model.Article">
+        SELECT DISTINCT *
+        FROM (SELECT
+        a.*,
+        if(wvac.comment_base IS NULL, wvac.id, wvac.comment_base) extra
+        FROM wj_view_article a, wj_view_article_comment wvac
+        WHERE wvac.article = a.id AND wvac.commenter != #{userId,jdbcType=INTEGER} AND ((wvac.comment_to_user_id is NULL
+        AND a.author = #{userId,jdbcType=INTEGER}) OR
+        wvac.comment_to_user_id = #{userId,jdbcType=INTEGER})
+        <if test="comparator != null and time != null">
+            AND unix_timestamp(wvac.time) ${comparator} #{time}
+        </if>
+        <if test="grpId != null">
+            AND a.group_id = #{grpId}
+        </if>
+        GROUP BY a.id,wvac.id
+        order by max(wvac.time) desc
+        ) a
+        <if test="startIndex != null">
+            limit #{startIndex,jdbcType=INTEGER},#{pageLimited,jdbcType=INTEGER}
+        </if>
+
+    </select>
+    <select id="selectMyReceiveMsgCount" parameterType="map" resultType="int">
+        SELECT count(*)
+        FROM wj_view_article a, wj_view_article_comment wvac
+        WHERE wvac.article = a.id AND wvac.commenter != #{userId,jdbcType=INTEGER} AND ((wvac.comment_to_user_id is NULL
+        AND a.author = #{userId,jdbcType=INTEGER})OR
+        wvac.comment_to_user_id = #{userId,jdbcType=INTEGER} )
+        <if test="comparator != null and time != null">
+            AND unix_timestamp(wvac.time) ${comparator} #{time}
+        </if>
+    </select>
+    <select id="selectLastNewCommentBaseUser" parameterType="map" resultMap="ViewResultMap">
+        SELECT *
+        FROM wj_view_article_comment
+        WHERE commenter = #{userId} AND (comment_base = #{commentBase} or id = #{commentBase})
+        <if test="comparator != null and time != null">
+            and unix_timestamp(time) ${comparator} ${time}
+        </if>
+        ORDER BY time DESC
+        LIMIT 0, 1
+    </select>
+    <select id="CommentData" parameterType="java.util.Map" resultType="com.wenjuan.model.ArticleComment">
+        SELECT *
+        FROM wj_comment_article
+        ORDER BY time DESC
+        LIMIT #{begin}, #{end}
+    </select>
+    <select id="CommentDataCount" resultType="int">
+        SELECT count(*)
+        FROM wj_comment_article
+        ORDER BY time DESC
+    </select>
+    <select id="commentLength" resultType="int" parameterType="java.lang.String">
+        SELECT CHARACTER_LENGTH(content)
+        FROM wj_comment_article a
+        WHERE id = #{id}
+    </select>
+    <select id="commentLengthList" resultType="com.wenjuan.model.ArticleComment" parameterType="java.util.Map">
+        SELECT *
+        FROM wj_comment_article a
+        WHERE article = #{aid} AND commenter = #{uid}
+        and time &lt;=#{time2} and time &gt;=#{time1}
+    </select>
+    <select id="comment" resultType="int" parameterType="java.util.Map">
+        SELECT count(*)
+        FROM wj_comment_article
+        WHERE article = #{aid} AND commenter = #{uid}
+    </select>
+    <select id="commentMM" resultType="com.wenjuan.model.ArticleComment" parameterType="int">
+        SELECT *
+        FROM wj_comment_article
+        WHERE date_sub(curdate(), INTERVAL 30 DAY) &lt;= date(time) AND commenter = #{uid};
+
+    </select>
+    <select id="CommentListFY" parameterType="java.util.Map" resultType="com.wenjuan.model.ArticleComment">
+       select * from wj_comment_article where article in (SELECT id from wj_article)  order by (select time from wj_article where id=article) desc LIMIT #{begin},#{end}
+    </select>
+    <select id="CommentListFYCount" resultType="int">
+        select count(*) from wj_comment_article where article in (SELECT id from wj_article)
+    </select>
+</mapper>

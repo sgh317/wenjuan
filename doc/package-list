@@ -1,0 +1,14 @@
+com.wenjuan
+com.wenjuan.bean
+com.wenjuan.controller
+com.wenjuan.dao
+com.wenjuan.interceptor
+com.wenjuan.model
+com.wenjuan.service
+com.wenjuan.service.impl
+com.wenjuan.utils
+com.wenjuan.vo
+com.wowtour.jersey.api
+com.wowtour.jersey.comm
+com.wowtour.jersey.utils
+com.wowtour.jersey.vo
